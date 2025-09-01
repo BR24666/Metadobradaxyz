@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react'
 import { useAutoStart } from '@/hooks/useAutoStart'
-import { motion, AnimatePresence } from 'framer-motion'
 import type { Signal } from '@/types/trading'
 
 export default function Dashboard() {
@@ -125,37 +124,24 @@ export default function Dashboard() {
           >
             {isLoading ? 'Analisando...' : 'Gerar Sinal'}
           </button>
-          <AnimatePresence>
-            {signal && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="mt-4 p-4 bg-green-600/20 border border-green-500 rounded-lg"
-              >
-                <h3 className="font-bold text-green-400 mb-2">Sinal Gerado!</h3>
-                <p className="text-sm"><strong>Par:</strong> {signal.pair}</p>
-                <p className="text-sm"><strong>Direção:</strong> {signal.direction}</p>
-                <p className="text-sm"><strong>Confiança:</strong> {signal.confidence}%</p>
-                <p className="text-sm"><strong>Estratégia:</strong> {signal.strategy}</p>
-              </motion.div>
-            )}
-            {message && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="mt-4 p-4 bg-red-600/20 border border-red-500 rounded-lg"
-              >
-                <p className="text-red-400">{message}</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {signal && (
+            <div className="mt-4 p-4 bg-green-600/20 border border-green-500 rounded-lg">
+              <h3 className="font-bold text-green-400 mb-2">Sinal Gerado!</h3>
+              <p className="text-sm"><strong>Par:</strong> {signal.pair}</p>
+              <p className="text-sm"><strong>Direção:</strong> {signal.direction}</p>
+              <p className="text-sm"><strong>Confiança:</strong> {signal.confidence}%</p>
+              <p className="text-sm"><strong>Estratégia:</strong> {signal.strategy}</p>
+            </div>
+          )}
+          {message && (
+            <div className="mt-4 p-4 bg-red-600/20 border border-red-500 rounded-lg">
+              <p className="text-red-400">{message}</p>
+            </div>
+          )}
         </div>
         <div className="lg:col-span-2 bg-gray-800 p-6 rounded-lg">
           <h2 className="text-xl font-bold mb-4">Progresso do Aprendizado</h2>
           
-          {/* Estatísticas de Aprendizado */}
           {learningStats && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <div className="bg-gray-700/50 p-3 rounded-lg text-center">
@@ -182,10 +168,9 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Recomendação */}
           {learningStats && (
             <div className="bg-gray-700/50 p-4 rounded-lg mb-4">
-              <h3 className="font-bold mb-2">�� Recomendação da IA:</h3>
+              <h3 className="font-bold mb-2">Recomendação da IA:</h3>
               <p className="text-gray-300">{learningStats.learningProgress.recommendation}</p>
             </div>
           )}
