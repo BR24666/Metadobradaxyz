@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAutoStart } from '@/hooks/useAutoStart'
 import { motion, AnimatePresence } from 'framer-motion'
-import type { Signal, TradeSimulation } from '@/types/trading'
+import type { Signal } from '@/types/trading'
 
 export default function Dashboard() {
   useAutoStart();

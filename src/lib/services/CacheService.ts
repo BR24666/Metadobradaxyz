@@ -25,7 +25,9 @@ export class CacheService {
 
     if (this.cache.size >= this.config.maxSize) {
       const oldestKey = this.cache.keys().next().value;
-      this.cache.delete(oldestKey);
+      if (oldestKey) { // Adicionar verificação para evitar undefined
+        this.cache.delete(oldestKey);
+      }
     }
 
     this.cache.set(key, {
