@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
 import type { ScalabilityConfig } from '@/types/trading';
 
 export const dynamic = 'force-dynamic';

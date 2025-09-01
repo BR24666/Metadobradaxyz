@@ -22,7 +22,7 @@ export async function POST(request: Request) {
         strategy: strategy.name
     };
     return NextResponse.json({ success: true, signal });
-  } catch (_error) {
+  } catch {
     return NextResponse.json({ success: false, message: "Não foi possível analisar o mercado." });
   }
 }

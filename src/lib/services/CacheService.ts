@@ -2,7 +2,7 @@ import type { CacheConfig } from '@/types/trading';
 
 export class CacheService {
   private static instance: CacheService;
-  private cache = new Map<string, { data: any; timestamp: number }>();
+  private cache = new Map<string, { data: unknown; timestamp: number }>();
   private config: CacheConfig;
 
   constructor(config: CacheConfig) {
@@ -20,7 +20,7 @@ export class CacheService {
     return CacheService.instance;
   }
 
-  set(key: string, data: any): void {
+  set(key: string, data: unknown): void {
     if (!this.config.enabled) return;
 
     if (this.cache.size >= this.config.maxSize) {
@@ -34,7 +34,7 @@ export class CacheService {
     });
   }
 
-  get(key: string): any | null {
+  get(key: string): unknown | null {
     if (!this.config.enabled) return null;
 
     const item = this.cache.get(key);

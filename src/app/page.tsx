@@ -12,7 +12,20 @@ export default function Dashboard() {
   const [message, setMessage] = useState('Selecione um par e clique para gerar um sinal.');
   const [isLoading, setIsLoading] = useState(false);
   const [stats, setStats] = useState<{ totalSimulations: number, recentTrades: TradeSimulation[] } | null>(null);
-  const [learningStats, setLearningStats] = useState<any>(null);
+  const [learningStats, setLearningStats] = useState<{
+    totalSimulations: number;
+    totalWins: number;
+    averageWinRate: number;
+    highConfidenceStrategies: number;
+    totalStrategies: number;
+    topStrategies: any[];
+    recentTrades: any[];
+    learningProgress: {
+      isLearning: boolean;
+      confidence: string;
+      recommendation: string;
+    };
+  } | null>(null);
 
   useEffect(() => {
       const checkStatus = async () => {

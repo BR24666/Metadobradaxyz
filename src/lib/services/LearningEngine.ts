@@ -1,7 +1,7 @@
 ﻿import { supabaseAdmin } from '@/lib/supabase'
 import { v4 as uuidv4 } from 'uuid'
 import { CRYPTO_PAIRS } from '@/lib/data/tradingPairs'
-import type { Strategy, TradeSimulation } from '@/types/trading'
+import type { Strategy } from '@/types/trading'
 
 export class LearningEngine {
   private static instance: LearningEngine
