@@ -11,15 +11,34 @@ export default function Dashboard() {
   const [signal, setSignal] = useState<Signal | null>(null);
   const [message, setMessage] = useState('Selecione um par e clique para gerar um sinal.');
   const [isLoading, setIsLoading] = useState(false);
-  const [stats, setStats] = useState<{ totalSimulations: number, recentTrades: TradeSimulation[] } | null>(null);
+  const [stats, setStats] = useState<{ 
+    totalSimulations: number, 
+    recentTrades: Array<{
+      id: string;
+      pair: string;
+      result: string;
+      created_at: string;
+    }> 
+  } | null>(null);
   const [learningStats, setLearningStats] = useState<{
     totalSimulations: number;
     totalWins: number;
     averageWinRate: number;
     highConfidenceStrategies: number;
     totalStrategies: number;
-    topStrategies: any[];
-    recentTrades: any[];
+    topStrategies: Array<{
+      id: number;
+      name: string;
+      level: number;
+      winRate: number;
+      totalTrades: number;
+    }>;
+    recentTrades: Array<{
+      id: string;
+      pair: string;
+      result: string;
+      created_at: string;
+    }>;
     learningProgress: {
       isLearning: boolean;
       confidence: string;
@@ -173,10 +192,10 @@ export default function Dashboard() {
 
           <h3 className="font-bold mb-2">Feed de Simulações em Tempo Real (Acertos e Erros)</h3>
           <div className="space-y-2">
-            {(stats?.recentTrades || []).map((trade: TradeSimulation) => (
+            {(stats?.recentTrades || []).map((trade) => (
               <div key={trade.id} className="grid grid-cols-3 items-center bg-gray-700/50 p-2 rounded text-sm">
                 <span className="font-mono">{trade.pair}</span>
-                <span className="font-mono text-xs text-blue-300">{trade.strategy_id.replaceAll('_', ' ')}</span>
+                <span className="font-mono text-xs text-blue-300">{trade.id}</span>
                 <span className={`font-bold ${trade.result === 'WIN' ? 'text-green-400' : 'text-red-400'}`}>{trade.result}</span>
               </div>
             ))}
