@@ -12,6 +12,7 @@ export default function Dashboard() {
   const [message, setMessage] = useState('Selecione um par e clique para gerar um sinal.');
   const [isLoading, setIsLoading] = useState(false);
   const [stats, setStats] = useState<{ totalSimulations: number, recentTrades: TradeSimulation[] } | null>(null);
+  const [learningStats, setLearningStats] = useState<any>(null);
 
   useEffect(() => {
       const checkStatus = async () => {
@@ -23,8 +24,25 @@ export default function Dashboard() {
           }
         } catch {}
       }
-      const interval = setInterval(checkStatus, 3000); // Atualiza o feed a cada 3s
+
+      const checkLearningStats = async () => {
+        try {
+          const res = await fetch('/api/learning-stats');
+          if (res.ok) {
+            const data = await res.json();
+            if(data.success) setLearningStats(data.data);
+          }
+        } catch {}
+      }
+
+      const interval = setInterval(() => {
+        checkStatus();
+        checkLearningStats();
+      }, 3000);
+      
       checkStatus();
+      checkLearningStats();
+      
       return () => clearInterval(interval);
   }, []);
 
@@ -56,7 +74,6 @@ export default function Dashboard() {
         <h1 className="text-3xl font-bold text-center">Meta Dobrada - AI Signal Generator</h1>
       </header>
       <main className="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-4 p-4">
-        {/* Coluna Esquerda: Gerador de Sinais */}
         <div className="lg:col-span-1 bg-gray-800 p-6 rounded-lg flex flex-col">
           <h2 className="text-xl font-bold mb-4 text-center">Gerador de Sinais (Próxima Vela)</h2>
           <p className="text-gray-400 text-sm mb-6 text-center">Selecione o par e obtenha a previsão da IA.</p>
@@ -76,40 +93,71 @@ export default function Dashboard() {
           >
             {isLoading ? 'Analisando...' : 'Gerar Sinal'}
           </button>
-          <div className="mt-6 flex-grow flex items-center justify-center bg-gray-900/50 rounded-lg p-6">
-            <AnimatePresence mode="wait">
+          <AnimatePresence>
+            {signal && (
               <motion.div
-                key={JSON.stringify(signal) + message}
-                initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -10, opacity: 0 }}
-                transition={{ duration: 0.2 }} className="text-center"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="mt-4 p-4 bg-green-600/20 border border-green-500 rounded-lg"
               >
-                {isLoading && <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-400"></div>}
-                {signal && (
-                  <div>
-                    <p className={`text-5xl font-bold my-2 ${signal.direction === 'GREEN' ? 'text-green-400' : 'text-red-400'}`}>
-                      {signal.direction === 'GREEN' ? 'COMPRA' : 'VENDA'}
-                    </p>
-                    <p className="text-sm">Confiança: <span className="font-bold">{signal.confidence}%</span></p>
-                  </div>
-                )}
-                {!isLoading && !signal && <p className="text-gray-500">{message}</p>}
+                <h3 className="font-bold text-green-400 mb-2">Sinal Gerado!</h3>
+                <p className="text-sm"><strong>Par:</strong> {signal.pair}</p>
+                <p className="text-sm"><strong>Direção:</strong> {signal.direction}</p>
+                <p className="text-sm"><strong>Confiança:</strong> {signal.confidence}%</p>
+                <p className="text-sm"><strong>Estratégia:</strong> {signal.strategy}</p>
               </motion.div>
-            </AnimatePresence>
-          </div>
+            )}
+            {message && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="mt-4 p-4 bg-red-600/20 border border-red-500 rounded-lg"
+              >
+                <p className="text-red-400">{message}</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-        {/* Coluna Direita: Feed de Aprendizado */}
         <div className="lg:col-span-2 bg-gray-800 p-6 rounded-lg">
           <h2 className="text-xl font-bold mb-4">Progresso do Aprendizado</h2>
-          <div className="flex items-center justify-between text-center bg-gray-900/50 p-3 rounded-lg mb-4">
-              <div>
-                  <h3 className="text-gray-400 text-sm">STATUS</h3>
-                  <p className="text-lg font-bold text-green-400">APRENDENDO 24/7</p>
+          
+          {/* Estatísticas de Aprendizado */}
+          {learningStats && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div className="bg-gray-700/50 p-3 rounded-lg text-center">
+                <h3 className="text-gray-400 text-sm">ACERTIVIDADE GERAL</h3>
+                <p className="text-2xl font-bold text-green-400">{learningStats.averageWinRate}%</p>
               </div>
-              <div>
-                  <h3 className="text-gray-400 text-sm">SIMULAÇÕES TOTAIS</h3>
-                  <p className="text-lg font-bold">{(stats?.totalSimulations || 0).toLocaleString()}</p>
+              <div className="bg-gray-700/50 p-3 rounded-lg text-center">
+                <h3 className="text-gray-400 text-sm">SIMULAÇÕES TOTAIS</h3>
+                <p className="text-2xl font-bold">{(learningStats.totalSimulations || 0).toLocaleString()}</p>
               </div>
-          </div>
+              <div className="bg-gray-700/50 p-3 rounded-lg text-center">
+                <h3 className="text-gray-400 text-sm">ESTRATÉGIAS CONFIÁVEIS</h3>
+                <p className="text-2xl font-bold text-blue-400">{learningStats.highConfidenceStrategies}</p>
+              </div>
+              <div className="bg-gray-700/50 p-3 rounded-lg text-center">
+                <h3 className="text-gray-400 text-sm">STATUS</h3>
+                <p className={`text-lg font-bold ${
+                  learningStats.learningProgress.confidence === 'ALTA' ? 'text-green-400' :
+                  learningStats.learningProgress.confidence === 'MÉDIA' ? 'text-yellow-400' : 'text-red-400'
+                }`}>
+                  {learningStats.learningProgress.confidence}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Recomendação */}
+          {learningStats && (
+            <div className="bg-gray-700/50 p-4 rounded-lg mb-4">
+              <h3 className="font-bold mb-2">�� Recomendação da IA:</h3>
+              <p className="text-gray-300">{learningStats.learningProgress.recommendation}</p>
+            </div>
+          )}
+
           <h3 className="font-bold mb-2">Feed de Simulações em Tempo Real (Acertos e Erros)</h3>
           <div className="space-y-2">
             {(stats?.recentTrades || []).map((trade: TradeSimulation) => (
